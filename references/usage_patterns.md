@@ -108,6 +108,24 @@ python scripts/run.py ask_question.py \
 # 5. Only then synthesize and respond to user
 ```
 
+## Pattern 4.5: Summary Loop Detection
+
+Sometimes NotebookLM repeats the same broad answer even after you ask for details such as source list, timeline, exact examples, quotes, customer cases, or transcript structure.
+
+Treat this as a **summary loop** when:
+
+- 2-3 different questions return substantially the same sections or phrasing.
+- The answer ignores requested fields and keeps giving article advice or a generic summary.
+- It cites source markers but does not expose the details needed for the task.
+
+Do not keep asking variations indefinitely. Stop and switch strategy:
+
+```text
+NotebookLM is only returning a summary layer for this notebook. I need either the original transcript/source notes, a user-provided excerpt, or permission to use another source. Until then I can only write directional analysis with clear boundaries.
+```
+
+For writing tasks, pass this boundary to the writing workflow before drafting. Do not let a thin NotebookLM summary masquerade as source-rich material.
+
 ## Pattern 5: Multi-Notebook Research
 
 ```python

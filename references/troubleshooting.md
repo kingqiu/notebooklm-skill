@@ -11,6 +11,10 @@
 | Notebook not found | `python scripts/run.py notebook_manager.py list` |
 | Script not working | Always use run.py wrapper |
 
+## Codex Permission Reminder
+
+In Codex, commands that install dependencies, launch Chrome, access NotebookLM, query Google, or read/write browser auth state require `sandbox_permissions: "require_escalated"`. If a command hangs or fails with network, browser, DNS, connection, authentication, or sandbox symptoms, rerun it with escalation.
+
 ## Critical: Always Use run.py
 
 Most issues are solved by using the run.py wrapper:
@@ -25,6 +29,22 @@ python scripts/auth_manager.py status  # ModuleNotFoundError!
 ```
 
 ## Common Issues and Solutions
+
+### NotebookLM repeats the same summary
+
+**Symptoms:**
+
+- Multiple differently worded questions return the same broad answer.
+- NotebookLM ignores requests for source titles, transcript order, exact examples, or detailed extraction.
+- The answer keeps suggesting article structures instead of exposing source material.
+
+**Solution:**
+
+1. Stop after 2-3 repeated answers; do not burn more queries.
+2. Mark the notebook result as “summary-only for this task.”
+3. Search local notes for the source transcript or source URL.
+4. Ask the user for the original transcript, pasted notes, or more detailed excerpts.
+5. If writing anyway, clearly label the output as directional analysis and do not imply source-level detail.
 
 ### Authentication Issues
 
@@ -98,7 +118,7 @@ python scripts/run.py auth_manager.py status
 # run.py will install Chromium automatically
 
 # Or manual install if needed
-cd ~/.claude/skills/notebooklm
+cd ~/.agents/skills/notebooklm
 source .venv/bin/activate
 python -m patchright install chromium
 ```
@@ -220,10 +240,10 @@ JSON decode error when listing notebooks
 **Solution:**
 ```bash
 # Backup current library
-cp ~/.claude/skills/notebooklm/data/library.json library.backup.json
+cp ~/.agents/skills/notebooklm/data/library.json library.backup.json
 
 # Reset library
-rm ~/.claude/skills/notebooklm/data/library.json
+rm ~/.agents/skills/notebooklm/data/library.json
 
 # Re-add notebooks
 python scripts/run.py notebook_manager.py add --url ... --name ...
@@ -233,7 +253,7 @@ python scripts/run.py notebook_manager.py add --url ... --name ...
 **Solution:**
 ```bash
 # Check disk usage
-df -h ~/.claude/skills/notebooklm/data/
+df -h ~/.agents/skills/notebooklm/data/
 
 # Clean up
 python scripts/run.py cleanup_manager.py --confirm --preserve-library
@@ -279,12 +299,12 @@ except Exception as e:
 pkill -f chromium
 
 # Backup library if exists
-if [ -f ~/.claude/skills/notebooklm/data/library.json ]; then
-    cp ~/.claude/skills/notebooklm/data/library.json ~/library.backup.json
+if [ -f ~/.agents/skills/notebooklm/data/library.json ]; then
+    cp ~/.agents/skills/notebooklm/data/library.json ~/library.backup.json
 fi
 
 # Clean everything
-cd ~/.claude/skills/notebooklm
+cd ~/.agents/skills/notebooklm
 python scripts/run.py cleanup_manager.py --confirm --force
 
 # Remove venv
@@ -295,15 +315,15 @@ python scripts/run.py auth_manager.py setup
 
 # Restore library if backup exists
 if [ -f ~/library.backup.json ]; then
-    mkdir -p ~/.claude/skills/notebooklm/data/
-    cp ~/library.backup.json ~/.claude/skills/notebooklm/data/library.json
+    mkdir -p ~/.agents/skills/notebooklm/data/
+    cp ~/library.backup.json ~/.agents/skills/notebooklm/data/library.json
 fi
 ```
 
 ### Partial recovery (keep data)
 ```bash
 # Keep auth and library, fix execution
-cd ~/.claude/skills/notebooklm
+cd ~/.agents/skills/notebooklm
 rm -rf .venv
 
 # run.py will recreate venv automatically
@@ -350,7 +370,7 @@ python scripts/run.py auth_manager.py status
 ```bash
 # System info
 python --version
-cd ~/.claude/skills/notebooklm
+cd ~/.agents/skills/notebooklm
 ls -la
 
 # Skill status
@@ -358,13 +378,13 @@ python scripts/run.py auth_manager.py status
 python scripts/run.py notebook_manager.py list | head -5
 
 # Check data directory
-ls -la ~/.claude/skills/notebooklm/data/
+ls -la ~/.agents/skills/notebooklm/data/
 ```
 
 ### Common questions
 
 **Q: Why doesn't this work in Claude web UI?**
-A: Web UI has no network access. Use local Claude Code.
+A: Web UI has no network access. Use local Codex.
 
 **Q: Can I use multiple Google accounts?**
 A: Yes, use `run.py auth_manager.py reauth` to switch.
